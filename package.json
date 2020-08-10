@@ -1,0 +1,26 @@
+{
+  "name": "mentine",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "start": "tsc && node dist/index.js",
+    "dev": "concurrently -k -n \"Typescript,Node\" -p \"[{name}]\" -c \"blue,green\" \"tsc --watch\" \"nodemon\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "json-to-pretty-yaml": "^1.2.2",
+    "json2yaml": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.9",
+    "concurrently": "^5.2.0",
+    "jest": "^26.2.2",
+    "nodemon": "^2.0.4",
+    "ts-jest": "^26.1.4",
+    "typescript": "^3.9.7"
+  }
+}
