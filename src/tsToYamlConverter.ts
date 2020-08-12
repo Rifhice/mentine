@@ -7,6 +7,7 @@ import {
   RequestResponses,
   Route,
 } from "./Routes/interfaces";
+import { validateRoute } from "./Routes/validators";
 import {
   SwaggerJsonRoute,
   SwaggerJsonRouteParametersPath,
@@ -115,6 +116,7 @@ export const convertCustomBodyToOpenAPIJsonFormat = (
 export const convertCustomRouteToOpenAPIJsonFormat = (
   doc: Route
 ): SwaggerJsonRoute => {
+  validateRoute(doc);
   const {
     path,
     method,
