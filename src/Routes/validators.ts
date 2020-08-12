@@ -57,7 +57,7 @@ export const validateDeleteRoute = (deleteRoute: DeleteRoute) => {
 };
 
 export const validateRoute = (route: Route) => {
-  if (!route) throw new Error("Route is required");
+  if (!isAnObject(route)) throw new Error("Route is a required required");
   if (route.method === "get") {
     return validateGetRoute(route);
   } else if (route.method === "post") {

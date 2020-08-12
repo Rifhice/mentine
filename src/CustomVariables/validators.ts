@@ -8,6 +8,7 @@ import {
   VariableNumber,
   VariableObject,
   VariablePassword,
+  VariableRef,
   VariableString,
 } from "./interfaces";
 const YAML = require("json2yaml");
@@ -236,6 +237,14 @@ export const validateArrayVariable = (arrayVariable: VariableArray) => {
   if (!isAnObject(items))
     throw new Error("Property 'items' should be a variable");
   validateVariable(items);
+};
+
+export const validateRefVariable = (refVariable: VariableRef) => {
+  validateBaseVariable(refVariable);
+  const { ref } = refVariable;
+  if (typeof ref !== "string") throw new Error("Ref is a required string");
+  if (!ref.startsWith("#/components/"))
+    throw new Error("Ref should start with '#/components/'");
 };
 
 export const validateVariable = (variable: Variable) => {

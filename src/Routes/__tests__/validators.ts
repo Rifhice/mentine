@@ -653,5 +653,7 @@ describe("Validate route object", () => {
     expect(() => validateRoute(validDeleteRoute)).not.toThrowError(Error);
     //@ts-ignore
     expect(() => validateRoute({ method: "lol" })).toThrowError(Error);
+    //@ts-ignore
+    expect(() => validateRoute()).toThrowError(Error);
   });
 });

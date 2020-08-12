@@ -7,6 +7,7 @@ import {
   VariableNumber,
   VariableObject,
   VariablePassword,
+  VariableRef,
   VariableString,
 } from "../interfaces";
 import {
@@ -18,6 +19,7 @@ import {
   validateNumberVariable,
   validateObjectVariable,
   validatePasswordVariable,
+  validateRefVariable,
   validateStringVariable,
 } from "../validators";
 
@@ -575,6 +577,52 @@ describe("Test validateBaseVariable", () => {
       //@ts-ignore
       copyArrayVariable.items = { type: "string" };
       expect(func).toThrowError(Error);
+    });
+  });
+
+  describe("Validate ref variable", () => {
+    const validRefVariable: VariableRef = {
+      type: "ref",
+      description: "Salut",
+      required: true,
+      ref: "#/components/schemas/User",
+    };
+
+    let copyRefVariable: VariableRef;
+
+    beforeEach(
+      () => (copyRefVariable = JSON.parse(JSON.stringify(validRefVariable)))
+    );
+
+    test("Ref is a required string", () => {
+      const func = () => validateRefVariable(copyRefVariable);
+      //@ts-ignore
+      copyRefVariable.ref = true;
+      expect(func).toThrowError(Error);
+      //@ts-ignore
+      copyRefVariable.ref = 3;
+      expect(func).toThrowError(Error);
+      //@ts-ignore
+      copyRefVariable.ref = {};
+      expect(func).toThrowError(Error);
+      //@ts-ignore
+      copyRefVariable.ref = [];
+      expect(func).toThrowError(Error);
+      //@ts-ignore
+      copyRefVariable.ref = null;
+      expect(func).toThrowError(Error);
+      //@ts-ignore
+      copyRefVariable.ref = undefined;
+      expect(func).toThrowError(Error);
+      delete copyRefVariable.ref;
+      expect(func).toThrowError(Error);
+    });
+    test("Ref should be a well formatted string", () => {
+      const func = () => validateRefVariable(copyRefVariable);
+      copyRefVariable.ref = "true";
+      expect(func).toThrowError(Error);
+      copyRefVariable.ref = "#/components/schemas/User";
+      expect(func).not.toThrowError(Error);
     });
   });
 });

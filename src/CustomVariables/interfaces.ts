@@ -87,7 +87,7 @@ export interface VariableAllOf extends BaseVariableType {
   subSchemas: Variable[];
 }
 
-export interface Variableref extends BaseVariableType {
+export interface VariableRef extends BaseVariableType {
   type: "ref";
   ref: string;
 }
@@ -103,4 +103,5 @@ export type Variable =
   | VariableObject
   | VariableAllOf
   | VariableAnyOf
-  | VariableOneOf;
+  | VariableOneOf
+  | VariableRef;
