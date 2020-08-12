@@ -1,94 +1,49 @@
 #!/usr/bin/env node
-import { PutRoute } from "./Routes/interfaces";
+
+import { Route } from "./Routes/interfaces";
 import {
   convertCustomRouteToOpenAPIJsonFormat,
   convertTsDocToYaml,
 } from "./tsToYamlConverter";
 
-const validPutRoute: PutRoute = {
-  path: "/api/user/:id/blacklist",
-  method: "put",
-  tag: "User",
-  summary: "lalalla",
-  description: "lelelel",
-  pathVariables: {
-    id: {
-      type: "string",
-      description: "Id of user",
-      example: "3",
-      required: true,
-    },
-  },
-  body: {
-    total: {
-      type: "integer",
-      description: "Total of actions",
-      example: 12,
-      required: true,
-    },
-    actions: {
-      type: "array",
-      description: "lol",
-      required: true,
-      items: {
-        type: "object",
-        description: "lol",
-        required: true,
-        properties: {
-          sender: {
-            type: "string",
-            description: "lol",
-            example: "me",
-            required: true,
-          },
-          content: {
-            type: "object",
-            description: "lol",
-            required: true,
-            properties: {
-              value: {
-                type: "string",
-                description: "lol",
-                example: "lol",
-                required: true,
-              },
-              mentions: {
-                type: "array",
-                description: "lol",
-                required: true,
-                items: {
-                  type: "object",
-                  description: "lol",
-                  required: true,
-                  properties: {
-                    user: {
-                      type: "string",
-                      description: "lol",
-                      required: true,
-                      example: "example",
-                    },
-                    value: {
-                      type: "string",
-                      description: "lol",
-                      required: true,
-                      example: "example",
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  },
-  responses: {
-    204: {
-      description: "Salut",
-    },
-  },
+const glob = require("glob");
+const fs = require("fs");
+const { program } = require("commander");
+const path = require("path");
+
+program
+  .option("-p, --path <path>", "Source path, default: .", "src")
+  .option("-r, --regex <regex>", "File regex, default: /.doc.ts/", ".*.doc.js");
+
+program.parse(process.argv);
+
+const srcPath = program.path;
+const fileNameRegex = new RegExp(program.regex);
+
+const getDirectories = function (src: string, callback) {
+  glob(src + "/**/*", callback);
 };
 
-console.log(
-  convertTsDocToYaml(convertCustomRouteToOpenAPIJsonFormat(validPutRoute))
-);
+getDirectories(srcPath, async function (err, res) {
+  if (err) return console.log("Error", err);
+  const files = res.filter((file) => fileNameRegex.test(file));
+  await Promise.all(
+    files.map(
+      (file) =>
+        new Promise((r) => {
+          const requiredFile = require(path.join(process.cwd(), file));
+          const yaml = convertTsDocToYaml(
+            convertCustomRouteToOpenAPIJsonFormat(
+              Object.values(requiredFile)[0] as Route
+            )
+          );
+          const jsDoc = `/**\n* @swagger\n${yaml
+            .split("\n")
+            .map((line) => `* ${line}`)
+            .join("\n")}\n*/`;
+          fs.writeFileSync(file, jsDoc);
+          r();
+        })
+    )
+  );
+});
