@@ -15,7 +15,7 @@ program
   .option("-p, --path <path>", "Source path, default: .", "dist")
   .option(
     "-re, --readExtension <readExtension>",
-    "File extension for reasing, default: /.doc.js/",
+    "File extension for reasing, default: .doc.js",
     ".doc.js"
   )
   .option(
@@ -28,15 +28,13 @@ program.parse(process.argv);
 
 const { path: srcPath, readExtension, writeExtension } = program;
 
-const fileNameRegex = new RegExp(".*" + readExtension);
-
 const getDirectories = function (src: string, callback) {
   glob(src + "/**/*", callback);
 };
 
 getDirectories(srcPath, async function (err, res) {
   if (err) return console.log("Error", err);
-  const files = res.filter((file) => fileNameRegex.test(file));
+  const files = res.filter((file) => file.includes(readExtension));
   await Promise.all(
     files.map(
       (file) =>
