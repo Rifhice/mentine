@@ -12,13 +12,23 @@ const { program } = require("commander");
 const path = require("path");
 
 program
-  .option("-p, --path <path>", "Source path, default: .", "src")
-  .option("-r, --regex <regex>", "File regex, default: /.doc.ts/", ".*.doc.js");
+  .option("-p, --path <path>", "Source path, default: .", "dist")
+  .option(
+    "-re, --readExtension <readExtension>",
+    "File extension for reasing, default: /.doc.js/",
+    ".doc.js"
+  )
+  .option(
+    "-we, --writeExtension <writeExtension>",
+    "Written files extension, default: .doc.js",
+    ".doc.js"
+  );
 
 program.parse(process.argv);
 
-const srcPath = program.path;
-const fileNameRegex = new RegExp(program.regex);
+const { path: srcPath, readExtension, writeExtension } = program;
+
+const fileNameRegex = new RegExp(".*" + readExtension);
 
 const getDirectories = function (src: string, callback) {
   glob(src + "/**/*", callback);
@@ -41,7 +51,7 @@ getDirectories(srcPath, async function (err, res) {
             .split("\n")
             .map((line) => `* ${line}`)
             .join("\n")}\n*/`;
-          fs.writeFileSync(file, jsDoc);
+          fs.writeFileSync(file.replace(readExtension, writeExtension), jsDoc);
           r();
         })
     )
