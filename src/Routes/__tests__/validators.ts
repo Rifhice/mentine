@@ -552,7 +552,7 @@ describe("Validate route object", () => {
       expect(func).toThrowError(Error);
     });
   });
-  describe("validate GET route", () => {});
+  describe.skip("validate GET route", () => {});
   describe("validate POST route", () => {
     let copyPostRoute: PostRoute;
 
@@ -645,7 +645,7 @@ describe("Validate route object", () => {
       expect(func).not.toThrowError(Error);
     });
   });
-  describe("validate DELETE route", () => {});
+  describe.skip("validate DELETE route", () => {});
   test("Validate route", () => {
     expect(() => validateRoute(validGetRoute)).not.toThrowError(Error);
     expect(() => validateRoute(validPostRoute)).not.toThrowError(Error);

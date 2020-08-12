@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { PutRoute } from "./Routes/interfaces";
 import {
   convertCustomRouteToOpenAPIJsonFormat,
