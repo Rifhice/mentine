@@ -1,12 +1,14 @@
 {
   "name": "mentine",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "jest --coverage",
     "start": "tsc && node dist/index.js",
-    "dev": "concurrently -k -n \"Typescript,Node\" -p \"[{name}]\" -c \"blue,green\" \"tsc --watch\" \"nodemon\""
+    "dev": "concurrently -k -n \"Typescript,Node\" -p \"[{name}]\" -c \"blue,green\" \"tsc --watch\" \"nodemon\"",
+    "prepare": "tsc",
+    "prepublishOnly": "npm test"
   },
   "keywords": [],
   "author": "",
@@ -22,5 +24,6 @@
     "nodemon": "^2.0.4",
     "ts-jest": "^26.1.4",
     "typescript": "^3.9.7"
-  }
+  },
+  "types": "dist/index.d.ts"
 }
