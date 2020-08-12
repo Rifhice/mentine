@@ -226,10 +226,12 @@ describe("Validate route object", () => {
     const validRequestResponse: RequestResponse = {
       description: "salut",
       response: {
-        type: "string",
-        description: "d",
-        example: "salut",
-        required: true,
+        name: {
+          type: "string",
+          description: "d",
+          example: "salut",
+          required: true,
+        },
       },
     };
 
@@ -259,6 +261,12 @@ describe("Validate route object", () => {
       const func = () => validateRequestResponse(copyRequestResponse);
       delete copyRequestResponse.response;
       expect(func).not.toThrowError(Error);
+    });
+
+    test("Response is a valid map of variable", () => {
+      const func = () => validateRequestResponse(copyRequestResponse);
+      delete copyRequestResponse.response;
+      expect(func).not.toThrowError(Error);
 
       //@ts-ignore
       copyRequestResponse.response = "salut";
@@ -269,25 +277,183 @@ describe("Validate route object", () => {
       //@ts-ignore
       copyRequestResponse.response = [];
       expect(func).toThrowError(Error);
-      //@ts-ignore
-      copyRequestResponse.response = {};
-      expect(func).toThrowError(Error);
 
-      //@ts-ignore
+      copyRequestResponse.response = {};
+      expect(func).not.toThrowError(Error);
+
       copyRequestResponse.response = {
-        type: "string",
-        description: "lol",
-        example: "mdr",
+        //@ts-ignore
+        name: {
+          type: "string",
+          description: "lol",
+          example: "mdr",
+        },
       };
       expect(func).toThrowError(Error);
 
       copyRequestResponse.response = {
-        type: "string",
-        description: "lol",
-        example: "mdr",
-        required: true,
+        name: {
+          type: "string",
+          description: "lol",
+          example: "mdr",
+          required: true,
+        },
       };
       expect(func).not.toThrowError(Error);
+    });
+
+    test("Response is a valid oneOf", () => {
+      const func = () => validateRequestResponse(copyRequestResponse);
+
+      copyRequestResponse.response = {
+        type: "oneOf",
+        subSchemas: [],
+        discriminator: "lol",
+      };
+      expect(func).not.toThrowError(Error);
+
+      copyRequestResponse.response = {
+        type: "oneOf",
+        subSchemas: [
+          {
+            name: {
+              type: "string",
+              description: "delo",
+              example: "salut",
+              required: true,
+            },
+          },
+        ],
+        discriminator: "lol",
+      };
+      expect(func).not.toThrowError(Error);
+
+      copyRequestResponse.response = {
+        type: "oneOf",
+        subSchemas: [],
+      };
+      expect(func).not.toThrowError(Error);
+
+      //@ts-ignore
+      copyRequestResponse.response = {
+        type: "oneOf",
+        discriminator: "lol",
+      };
+      expect(func).toThrowError(Error);
+
+      //@ts-ignore
+      copyRequestResponse.response = {
+        type: "oneOf",
+        subSchemas: [
+          //@ts-ignore
+          {
+            //@ts-ignore
+            type: "string",
+            //@ts-ignore
+            description: "delo",
+          },
+        ],
+        discriminator: "lol",
+      };
+      expect(func).toThrowError(Error);
+    });
+    test("Response is a valid allOf", () => {
+      const func = () => validateRequestResponse(copyRequestResponse);
+
+      copyRequestResponse.response = {
+        type: "allOf",
+        subSchemas: [],
+      };
+      expect(func).not.toThrowError(Error);
+
+      copyRequestResponse.response = {
+        type: "allOf",
+        subSchemas: [
+          {
+            name: {
+              type: "string",
+              description: "delo",
+              example: "salut",
+              required: true,
+            },
+          },
+        ],
+      };
+      expect(func).not.toThrowError(Error);
+
+      copyRequestResponse.response = {
+        type: "allOf",
+        subSchemas: [],
+      };
+      expect(func).not.toThrowError(Error);
+
+      //@ts-ignore
+      copyRequestResponse.response = {
+        type: "allOf",
+        subSchemas: [
+          //@ts-ignore
+          {
+            //@ts-ignore
+            type: "string",
+            //@ts-ignore
+            description: "delo",
+          },
+        ],
+        discriminator: "lol",
+      };
+      expect(func).toThrowError(Error);
+    });
+    test("Response is a valid anyOf", () => {
+      const func = () => validateRequestResponse(copyRequestResponse);
+
+      copyRequestResponse.response = {
+        type: "anyOf",
+        subSchemas: [],
+      };
+      expect(func).not.toThrowError(Error);
+
+      copyRequestResponse.response = {
+        type: "anyOf",
+        subSchemas: [
+          {
+            name: {
+              type: "string",
+              description: "delo",
+              example: "salut",
+              required: true,
+            },
+          },
+        ],
+      };
+      expect(func).not.toThrowError(Error);
+
+      copyRequestResponse.response = {
+        type: "anyOf",
+        subSchemas: [],
+      };
+      expect(func).not.toThrowError(Error);
+
+      //@ts-ignore
+      copyRequestResponse.response = {
+        type: "anyOf",
+      };
+      expect(func).toThrowError(Error);
+
+      //@ts-ignore
+      copyRequestResponse.response = {
+        type: "anyOf",
+        subSchemas: [
+          //@ts-ignore
+          {
+            //@ts-ignore
+            type: "string",
+            //@ts-ignore
+            description: "delo",
+          },
+        ],
+        discriminator: "lol",
+      };
+      expect(func).toThrowError(Error);
     });
   });
 
@@ -542,17 +708,22 @@ describe("Validate route object", () => {
         200: {
           description: "",
           response: {
-            type: "string",
-            description: "lol",
-            example: "mdr",
-            required: true,
+            name: {
+              type: "string",
+              description: "lol",
+              example: "mdr",
+              required: true,
+            },
           },
         },
       };
       expect(func).toThrowError(Error);
     });
   });
+
+  describe.skip("validate DELETE route", () => {});
   describe.skip("validate GET route", () => {});
+
   describe("validate POST route", () => {
     let copyPostRoute: PostRoute;
 
@@ -560,7 +731,7 @@ describe("Validate route object", () => {
       () => (copyPostRoute = JSON.parse(JSON.stringify(validPostRoute)))
     );
 
-    test("Body is an optional valid variable", () => {
+    test("Body is an optional valid map of variables", () => {
       const func = () => validatePostRoute(copyPostRoute);
       delete copyPostRoute.body;
 
@@ -599,7 +770,162 @@ describe("Validate route object", () => {
 
       expect(func).not.toThrowError(Error);
     });
+
+    test("Body is a valid oneOf", () => {
+      const func = () => validatePostRoute(copyPostRoute);
+
+      copyPostRoute.body = {
+        type: "oneOf",
+        subSchemas: [],
+        discriminator: "lol",
+      };
+      expect(func).not.toThrowError(Error);
+
+      copyPostRoute.body = {
+        type: "oneOf",
+        subSchemas: [
+          {
+            name: {
+              type: "string",
+              description: "delo",
+              example: "salut",
+              required: true,
+            },
+          },
+        ],
+        discriminator: "lol",
+      };
+      expect(func).not.toThrowError(Error);
+
+      copyPostRoute.body = {
+        type: "oneOf",
+        subSchemas: [],
+      };
+      expect(func).not.toThrowError(Error);
+
+      //@ts-ignore
+      copyPostRoute.body = {
+        type: "oneOf",
+        discriminator: "lol",
+      };
+      expect(func).toThrowError(Error);
+
+      //@ts-ignore
+      copyPostRoute.body = {
+        type: "oneOf",
+        subSchemas: [
+          //@ts-ignore
+          {
+            //@ts-ignore
+            type: "string",
+            //@ts-ignore
+            description: "delo",
+          },
+        ],
+        discriminator: "lol",
+      };
+      expect(func).toThrowError(Error);
+    });
+    test("Body is a valid allOf", () => {
+      const func = () => validatePostRoute(copyPostRoute);
+
+      copyPostRoute.body = {
+        type: "allOf",
+        subSchemas: [],
+      };
+      expect(func).not.toThrowError(Error);
+
+      copyPostRoute.body = {
+        type: "allOf",
+        subSchemas: [
+          {
+            name: {
+              type: "string",
+              description: "delo",
+              example: "salut",
+              required: true,
+            },
+          },
+        ],
+      };
+      expect(func).not.toThrowError(Error);
+
+      copyPostRoute.body = {
+        type: "allOf",
+        subSchemas: [],
+      };
+      expect(func).not.toThrowError(Error);
+
+      //@ts-ignore
+      copyPostRoute.body = {
+        type: "allOf",
+        subSchemas: [
+          //@ts-ignore
+          {
+            //@ts-ignore
+            type: "string",
+            //@ts-ignore
+            description: "delo",
+          },
+        ],
+        discriminator: "lol",
+      };
+      expect(func).toThrowError(Error);
+    });
+    test("Body is a valid anyOf", () => {
+      const func = () => validatePostRoute(copyPostRoute);
+
+      copyPostRoute.body = {
+        type: "anyOf",
+        subSchemas: [],
+      };
+      expect(func).not.toThrowError(Error);
+
+      copyPostRoute.body = {
+        type: "anyOf",
+        subSchemas: [
+          {
+            name: {
+              type: "string",
+              description: "delo",
+              example: "salut",
+              required: true,
+            },
+          },
+        ],
+      };
+      expect(func).not.toThrowError(Error);
+
+      copyPostRoute.body = {
+        type: "anyOf",
+        subSchemas: [],
+      };
+      expect(func).not.toThrowError(Error);
+
+      //@ts-ignore
+      copyPostRoute.body = {
+        type: "anyOf",
+      };
+      expect(func).toThrowError(Error);
+
+      //@ts-ignore
+      copyPostRoute.body = {
+        type: "anyOf",
+        subSchemas: [
+          //@ts-ignore
+          {
+            //@ts-ignore
+            type: "string",
+            //@ts-ignore
+            description: "delo",
+          },
+        ],
+        discriminator: "lol",
+      };
+      expect(func).toThrowError(Error);
+    });
   });
+
   describe("validate PUT route", () => {
     let copyPutRoute: PutRoute;
 
@@ -607,7 +933,7 @@ describe("Validate route object", () => {
       () => (copyPutRoute = JSON.parse(JSON.stringify(validPutRoute)))
     );
 
-    test("Body is an optional valid variable", () => {
+    test("Body is an optional valid map of variables", () => {
       const func = () => validatePutRoute(copyPutRoute);
       delete copyPutRoute.body;
 
@@ -644,8 +970,162 @@ describe("Validate route object", () => {
       };
       expect(func).not.toThrowError(Error);
     });
+
+    test("Body is a valid oneOf", () => {
+      const func = () => validatePutRoute(copyPutRoute);
+
+      copyPutRoute.body = {
+        type: "oneOf",
+        subSchemas: [],
+        discriminator: "lol",
+      };
+      expect(func).not.toThrowError(Error);
+
+      copyPutRoute.body = {
+        type: "oneOf",
+        subSchemas: [
+          {
+            name: {
+              type: "string",
+              description: "delo",
+              example: "salut",
+              required: true,
+            },
+          },
+        ],
+        discriminator: "lol",
+      };
+      expect(func).not.toThrowError(Error);
+
+      copyPutRoute.body = {
+        type: "oneOf",
+        subSchemas: [],
+      };
+      expect(func).not.toThrowError(Error);
+
+      //@ts-ignore
+      copyPutRoute.body = {
+        type: "oneOf",
+        discriminator: "lol",
+      };
+      expect(func).toThrowError(Error);
+
+      //@ts-ignore
+      copyPutRoute.body = {
+        type: "oneOf",
+        subSchemas: [
+          //@ts-ignore
+          {
+            //@ts-ignore
+            type: "string",
+            //@ts-ignore
+            description: "delo",
+          },
+        ],
+        discriminator: "lol",
+      };
+      expect(func).toThrowError(Error);
+    });
+    test("Body is a valid allOf", () => {
+      const func = () => validatePutRoute(copyPutRoute);
+
+      copyPutRoute.body = {
+        type: "allOf",
+        subSchemas: [],
+      };
+      expect(func).not.toThrowError(Error);
+
+      copyPutRoute.body = {
+        type: "allOf",
+        subSchemas: [
+          {
+            name: {
+              type: "string",
+              description: "delo",
+              example: "salut",
+              required: true,
+            },
+          },
+        ],
+      };
+      expect(func).not.toThrowError(Error);
+
+      copyPutRoute.body = {
+        type: "allOf",
+        subSchemas: [],
+      };
+      expect(func).not.toThrowError(Error);
+
+      //@ts-ignore
+      copyPutRoute.body = {
+        type: "allOf",
+        subSchemas: [
+          //@ts-ignore
+          {
+            //@ts-ignore
+            type: "string",
+            //@ts-ignore
+            description: "delo",
+          },
+        ],
+        discriminator: "lol",
+      };
+      expect(func).toThrowError(Error);
+    });
+    test("Body is a valid anyOf", () => {
+      const func = () => validatePutRoute(copyPutRoute);
+
+      copyPutRoute.body = {
+        type: "anyOf",
+        subSchemas: [],
+      };
+      expect(func).not.toThrowError(Error);
+
+      copyPutRoute.body = {
+        type: "anyOf",
+        subSchemas: [
+          {
+            name: {
+              type: "string",
+              description: "delo",
+              example: "salut",
+              required: true,
+            },
+          },
+        ],
+      };
+      expect(func).not.toThrowError(Error);
+
+      copyPutRoute.body = {
+        type: "anyOf",
+        subSchemas: [],
+      };
+      expect(func).not.toThrowError(Error);
+
+      //@ts-ignore
+      copyPutRoute.body = {
+        type: "anyOf",
+      };
+      expect(func).toThrowError(Error);
+
+      //@ts-ignore
+      copyPutRoute.body = {
+        type: "anyOf",
+        subSchemas: [
+          //@ts-ignore
+          {
+            //@ts-ignore
+            type: "string",
+            //@ts-ignore
+            description: "delo",
+          },
+        ],
+        discriminator: "lol",
+      };
+      expect(func).toThrowError(Error);
+    });
   });
-  describe.skip("validate DELETE route", () => {});
+
   test("Validate route", () => {
     expect(() => validateRoute(validGetRoute)).not.toThrowError(Error);
     expect(() => validateRoute(validPostRoute)).not.toThrowError(Error);

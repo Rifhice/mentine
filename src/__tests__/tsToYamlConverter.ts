@@ -188,82 +188,615 @@ describe("Test convertCustomQueryVariableToOpenAPIJsonFormat", () => {
 });
 
 describe("Test convertCustomResponseToOpenAPIJsonFormat", () => {
-  const validResponses: RequestResponses = {
-    204: {
-      description: "No content",
-    },
-    200: {
-      description: "Success",
-      response: {
-        type: "string",
-        description: "Name",
-        example: "John",
-        required: true,
+  describe("Convert map of variables", () => {
+    const validResponses: RequestResponses = {
+      204: {
+        description: "No content",
       },
-    },
-  };
-  let copyResponses: RequestResponses;
-  beforeEach(
-    () => (copyResponses = JSON.parse(JSON.stringify(validResponses)))
-  );
-  test("Should call validateVariable for each responses", () => {
-    jest.resetAllMocks();
-    const spy = jest.spyOn(validators, "validateVariable");
-    const func = () => convertCustomResponseToOpenAPIJsonFormat(copyResponses);
-    expect(func).not.toThrow(Error);
-    expect(spy).toHaveBeenCalledTimes(1);
+      200: {
+        description: "Success",
+        response: {
+          name: {
+            type: "string",
+            description: "Name",
+            example: "John",
+            required: true,
+          },
+        },
+      },
+    };
+    let copyResponses: RequestResponses;
+    beforeEach(
+      () => (copyResponses = JSON.parse(JSON.stringify(validResponses)))
+    );
+    test("Should call validateVariable for each responses", () => {
+      jest.resetAllMocks();
+      const spy = jest.spyOn(validators, "validateVariable");
+      const func = () =>
+        convertCustomResponseToOpenAPIJsonFormat(copyResponses);
+      expect(func).not.toThrow(Error);
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("Convert oneOf", () => {
+    const validResponses: RequestResponses = {
+      201: {
+        description: "Success",
+        response: {
+          type: "oneOf",
+          subSchemas: [
+            {
+              name: {
+                type: "string",
+                description: "Name",
+                example: "John",
+                required: true,
+              },
+            },
+            {
+              total: {
+                type: "string",
+                description: "Name",
+                example: "John",
+                required: true,
+              },
+            },
+          ],
+        },
+      },
+    };
+    let copyResponses: RequestResponses;
+    beforeEach(
+      () => (copyResponses = JSON.parse(JSON.stringify(validResponses)))
+    );
+    test("Should call validateVariable for each values", () => {
+      jest.resetAllMocks();
+      const spy = jest.spyOn(validators, "validateVariable");
+      const func = () =>
+        convertCustomResponseToOpenAPIJsonFormat(copyResponses);
+      expect(func).not.toThrow(Error);
+      expect(spy).toHaveBeenCalledTimes(2);
+    });
+
+    test("Should return a valid SwaggerJsonRouteRequestBody", () => {
+      const res = convertCustomResponseToOpenAPIJsonFormat(copyResponses);
+      expect(res).toEqual({
+        201: {
+          description: "Success",
+          oneOf: [
+            {
+              type: "object",
+              description: "root",
+              required: ["name"],
+              properties: {
+                name: {
+                  type: "string",
+                  description: "Name",
+                  example: "John",
+                },
+              },
+            },
+            {
+              type: "object",
+              description: "root",
+              required: ["total"],
+              properties: {
+                total: {
+                  type: "string",
+                  description: "Name",
+                  example: "John",
+                },
+              },
+            },
+          ],
+        },
+      });
+    });
+  });
+
+  describe("Convert anyOf", () => {
+    const validResponses: RequestResponses = {
+      201: {
+        description: "Success",
+        response: {
+          type: "anyOf",
+          subSchemas: [
+            {
+              name: {
+                type: "string",
+                description: "Name",
+                example: "John",
+                required: true,
+              },
+            },
+            {
+              total: {
+                type: "string",
+                description: "Name",
+                example: "John",
+                required: true,
+              },
+            },
+          ],
+        },
+      },
+    };
+    let copyResponses: RequestResponses;
+    beforeEach(
+      () => (copyResponses = JSON.parse(JSON.stringify(validResponses)))
+    );
+    test("Should call validateVariable for each values", () => {
+      jest.resetAllMocks();
+      const spy = jest.spyOn(validators, "validateVariable");
+      const func = () =>
+        convertCustomResponseToOpenAPIJsonFormat(copyResponses);
+      expect(func).not.toThrow(Error);
+      expect(spy).toHaveBeenCalledTimes(2);
+    });
+
+    test("Should return a valid SwaggerJsonRouteRequestBody", () => {
+      const res = convertCustomResponseToOpenAPIJsonFormat(copyResponses);
+      expect(res).toEqual({
+        201: {
+          description: "Success",
+          anyOf: [
+            {
+              type: "object",
+              description: "root",
+              required: ["name"],
+              properties: {
+                name: {
+                  type: "string",
+                  description: "Name",
+                  example: "John",
+                },
+              },
+            },
+            {
+              type: "object",
+              description: "root",
+              required: ["total"],
+              properties: {
+                total: {
+                  type: "string",
+                  description: "Name",
+                  example: "John",
+                },
+              },
+            },
+          ],
+        },
+      });
+    });
+  });
+  describe("Convert allOf", () => {
+    const validResponses: RequestResponses = {
+      201: {
+        description: "Success",
+        response: {
+          type: "allOf",
+          subSchemas: [
+            {
+              name: {
+                type: "string",
+                description: "Name",
+                example: "John",
+                required: true,
+              },
+            },
+            {
+              total: {
+                type: "string",
+                description: "Name",
+                example: "John",
+                required: true,
+              },
+            },
+            {
+              total: {
+                type: "ref",
+                description: "Name",
+                ref: "John",
+                required: true,
+              },
+            },
+            {
+              type: "ref",
+              description: "Name",
+              ref: "John",
+              required: true,
+            },
+          ],
+        },
+      },
+    };
+    let copyResponses: RequestResponses;
+    beforeEach(
+      () => (copyResponses = JSON.parse(JSON.stringify(validResponses)))
+    );
+    test("Should call validateVariable for each values", () => {
+      jest.resetAllMocks();
+      const spy = jest.spyOn(validators, "validateVariable");
+      const func = () =>
+        convertCustomResponseToOpenAPIJsonFormat(copyResponses);
+      expect(func).not.toThrow(Error);
+      expect(spy).toHaveBeenCalledTimes(4);
+    });
+
+    test("Should return a valid SwaggerJsonRouteRequestBody", () => {
+      const res = convertCustomResponseToOpenAPIJsonFormat(copyResponses);
+      expect(res).toEqual({
+        201: {
+          description: "Success",
+          allOf: [
+            {
+              type: "object",
+              description: "root",
+              required: ["name"],
+              properties: {
+                name: {
+                  type: "string",
+                  description: "Name",
+                  example: "John",
+                },
+              },
+            },
+            {
+              type: "object",
+              description: "root",
+              required: ["total"],
+              properties: {
+                total: {
+                  type: "string",
+                  description: "Name",
+                  example: "John",
+                },
+              },
+            },
+            {
+              type: "object",
+              description: "root",
+              required: ["total"],
+              properties: {
+                total: {
+                  $ref: "John",
+                },
+              },
+            },
+            {
+              $ref: "John",
+            },
+          ],
+        },
+      });
+    });
   });
 });
 
 describe("Test convertCustomBodyToOpenAPIJsonFormat", () => {
-  const validBody: RequestBody = {
-    blacklist: {
-      type: "boolean",
-      description: "Is blacklisted",
-      example: true,
-      required: true,
-    },
-    total: {
-      type: "integer",
-      description: "Total of blacklist",
-      example: 2,
-      required: true,
-    },
-  };
-  let copyBody: RequestBody;
-  beforeEach(() => (copyBody = JSON.parse(JSON.stringify(validBody))));
+  describe("Convert map of variables", () => {
+    const validBody: RequestBody = {
+      blacklist: {
+        type: "boolean",
+        description: "Is blacklisted",
+        example: true,
+        required: true,
+      },
+      total: {
+        type: "integer",
+        description: "Total of blacklist",
+        example: 2,
+        required: true,
+      },
+    };
+    let copyBody: RequestBody;
+    beforeEach(() => (copyBody = JSON.parse(JSON.stringify(validBody))));
+    test("Should call validateVariable for each values", () => {
+      jest.resetAllMocks();
+      const spy = jest.spyOn(validators, "validateVariable");
+      const func = () => convertCustomBodyToOpenAPIJsonFormat(copyBody);
+      expect(func).not.toThrow(Error);
+      expect(spy).toHaveBeenCalledTimes(2);
+    });
 
-  test("Should call validateVariable for each values", () => {
-    jest.resetAllMocks();
-    const spy = jest.spyOn(validators, "validateVariable");
-    const func = () => convertCustomBodyToOpenAPIJsonFormat(copyBody);
-    expect(func).not.toThrow(Error);
-    expect(spy).toHaveBeenCalledTimes(2);
-  });
-  test("Should return a valid SwaggerJsonRouteRequestBody", () => {
-    const res = convertCustomBodyToOpenAPIJsonFormat(copyBody);
-    expect(res).toEqual({
-      content: {
-        "application/json": {
-          schema: {
-            type: "object",
-            description: "root",
-            properties: {
-              blacklist: {
-                type: "boolean",
-                description: "Is blacklisted",
-                example: true,
+    test("Should return a valid SwaggerJsonRouteRequestBody", () => {
+      const res = convertCustomBodyToOpenAPIJsonFormat(copyBody);
+      expect(res).toEqual({
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              description: "root",
+              properties: {
+                blacklist: {
+                  type: "boolean",
+                  description: "Is blacklisted",
+                  example: true,
+                },
+                total: {
+                  type: "integer",
+                  description: "Total of blacklist",
+                  example: 2,
+                },
               },
-              total: {
-                type: "integer",
-                description: "Total of blacklist",
-                example: 2,
-              },
+              required: ["blacklist", "total"],
             },
-            required: ["blacklist", "total"],
           },
         },
-      },
+      });
+    });
+  });
+
+  describe("Convert oneOf", () => {
+    const validBody: RequestBody = {
+      type: "oneOf",
+      subSchemas: [
+        {
+          blacklist: {
+            type: "boolean",
+            description: "Is blacklisted",
+            example: true,
+            required: true,
+          },
+          total: {
+            type: "integer",
+            description: "Total of blacklist",
+            example: 2,
+            required: false,
+          },
+        },
+        {
+          total: {
+            type: "integer",
+            description: "Total of blacklist",
+            example: 2,
+            required: true,
+          },
+        },
+      ],
+    };
+    let copyBody: RequestBody;
+    beforeEach(() => (copyBody = JSON.parse(JSON.stringify(validBody))));
+    test("Should call validateVariable for each values", () => {
+      jest.resetAllMocks();
+      const spy = jest.spyOn(validators, "validateVariable");
+      const func = () => convertCustomBodyToOpenAPIJsonFormat(copyBody);
+      expect(func).not.toThrow(Error);
+      expect(spy).toHaveBeenCalledTimes(3);
+    });
+
+    test("Should return a valid SwaggerJsonRouteRequestBody", () => {
+      const res = convertCustomBodyToOpenAPIJsonFormat(copyBody);
+      expect(res).toEqual({
+        content: {
+          "application/json": {
+            schema: {
+              oneOf: [
+                {
+                  type: "object",
+                  description: "root",
+                  required: ["blacklist"],
+                  properties: {
+                    blacklist: {
+                      type: "boolean",
+                      description: "Is blacklisted",
+                      example: true,
+                    },
+                    total: {
+                      type: "integer",
+                      description: "Total of blacklist",
+                      example: 2,
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  description: "root",
+                  required: ["total"],
+                  properties: {
+                    total: {
+                      type: "integer",
+                      description: "Total of blacklist",
+                      example: 2,
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        },
+      });
+    });
+  });
+  describe("Convert allOf", () => {
+    const validBody: RequestBody = {
+      type: "allOf",
+      subSchemas: [
+        {
+          blacklist: {
+            type: "boolean",
+            description: "Is blacklisted",
+            example: true,
+            required: false,
+          },
+          total: {
+            type: "integer",
+            description: "Total of blacklist",
+            example: 2,
+            required: true,
+          },
+        },
+        {
+          total: {
+            type: "integer",
+            description: "Total of blacklist",
+            example: 2,
+            required: true,
+          },
+        },
+      ],
+    };
+    let copyBody: RequestBody;
+    beforeEach(() => (copyBody = JSON.parse(JSON.stringify(validBody))));
+    test("Should call validateVariable for each values", () => {
+      jest.resetAllMocks();
+      const spy = jest.spyOn(validators, "validateVariable");
+      const func = () => convertCustomBodyToOpenAPIJsonFormat(copyBody);
+      expect(func).not.toThrow(Error);
+      expect(spy).toHaveBeenCalledTimes(3);
+    });
+
+    test("Should return a valid SwaggerJsonRouteRequestBody", () => {
+      const res = convertCustomBodyToOpenAPIJsonFormat(copyBody);
+      expect(res).toEqual({
+        content: {
+          "application/json": {
+            schema: {
+              allOf: [
+                {
+                  type: "object",
+                  description: "root",
+                  required: ["total"],
+                  properties: {
+                    blacklist: {
+                      type: "boolean",
+                      description: "Is blacklisted",
+                      example: true,
+                    },
+                    total: {
+                      type: "integer",
+                      description: "Total of blacklist",
+                      example: 2,
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  description: "root",
+                  required: ["total"],
+                  properties: {
+                    total: {
+                      type: "integer",
+                      description: "Total of blacklist",
+                      example: 2,
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        },
+      });
+    });
+  });
+
+  describe("Convert anyOf", () => {
+    const validBody: RequestBody = {
+      type: "anyOf",
+      subSchemas: [
+        {
+          blacklist: {
+            type: "boolean",
+            description: "Is blacklisted",
+            example: true,
+            required: true,
+          },
+          total: {
+            type: "integer",
+            description: "Total of blacklist",
+            example: 2,
+            required: true,
+          },
+        },
+        {
+          total: {
+            type: "integer",
+            description: "Total of blacklist",
+            example: 2,
+            required: true,
+          },
+        },
+        {
+          lol: {
+            type: "ref",
+            ref: "User",
+            description: "slol",
+            required: true,
+          },
+        },
+        {
+          type: "ref",
+          ref: "User",
+          description: "slol",
+          required: true,
+        },
+      ],
+    };
+    let copyBody: RequestBody;
+    beforeEach(() => (copyBody = JSON.parse(JSON.stringify(validBody))));
+    test("Should call validateVariable for each values", () => {
+      jest.resetAllMocks();
+      const spy = jest.spyOn(validators, "validateVariable");
+      const func = () => convertCustomBodyToOpenAPIJsonFormat(copyBody);
+      expect(func).not.toThrow(Error);
+      expect(spy).toHaveBeenCalledTimes(5);
+    });
+
+    test("Should return a valid SwaggerJsonRouteRequestBody", () => {
+      const res = convertCustomBodyToOpenAPIJsonFormat(copyBody);
+      expect(res).toEqual({
+        content: {
+          "application/json": {
+            schema: {
+              anyOf: [
+                {
+                  type: "object",
+                  description: "root",
+                  required: ["blacklist", "total"],
+                  properties: {
+                    blacklist: {
+                      type: "boolean",
+                      description: "Is blacklisted",
+                      example: true,
+                    },
+                    total: {
+                      type: "integer",
+                      description: "Total of blacklist",
+                      example: 2,
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  description: "root",
+                  required: ["total"],
+                  properties: {
+                    total: {
+                      type: "integer",
+                      description: "Total of blacklist",
+                      example: 2,
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  description: "root",
+                  required: ["lol"],
+                  properties: {
+                    lol: {
+                      $ref: "User",
+                    },
+                  },
+                },
+                {
+                  $ref: "User",
+                },
+              ],
+            },
+          },
+        },
+      });
     });
   });
 });

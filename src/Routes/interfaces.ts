@@ -1,4 +1,10 @@
-import { Variable } from "../CustomVariables/interfaces";
+import {
+  allOf,
+  anyOf,
+  oneOf,
+  Variable,
+  VariableRef,
+} from "../CustomVariables/interfaces";
 import { HttpVerb, ObjectType } from "../interfaces";
 
 export type RequestResponses = {
@@ -7,14 +13,22 @@ export type RequestResponses = {
 
 export type RequestResponse = {
   description: string;
-  response?: Variable;
+  response?:
+    | ObjectType<Variable>
+    | oneOf<ObjectType<Variable> | VariableRef>
+    | allOf<ObjectType<Variable> | VariableRef>
+    | anyOf<ObjectType<Variable> | VariableRef>;
 };
 
 export type PathVariables = ObjectType<Variable & { required: true }>;
 
 export type QueryVariables = ObjectType<Variable>;
 
-export type RequestBody = ObjectType<Variable>;
+export type RequestBody =
+  | ObjectType<Variable>
+  | oneOf<ObjectType<Variable> | VariableRef>
+  | allOf<ObjectType<Variable> | VariableRef>
+  | anyOf<ObjectType<Variable> | VariableRef>;
 
 export type Route = GetRoute | PostRoute | PutRoute | DeleteRoute;
 

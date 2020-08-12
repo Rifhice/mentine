@@ -6,8 +6,7 @@ import {
   VariablePassword,
   VariableString,
 } from "../CustomVariables/interfaces";
-import { HttpVerb } from "../interfaces";
-import { RequestResponse } from "../Routes/interfaces";
+import { HttpVerb, ObjectType } from "../interfaces";
 
 export type SwaggerJsonBaseVariableType = {
   description: string;
@@ -34,6 +33,10 @@ export interface SwaggerJsonVariableArray extends SwaggerJsonBaseVariableType {
   uniqueItems?: boolean;
 }
 
+export type SwaggerJsonVariableRef = {
+  $ref: string;
+};
+
 export type SwaggerJsonVariable =
   | VariableString
   | VariableNumber
@@ -42,7 +45,8 @@ export type SwaggerJsonVariable =
   | VariableDate
   | VariablePassword
   | SwaggerJsonVariableArray
-  | SwaggerJsonVariableObject;
+  | SwaggerJsonVariableObject
+  | SwaggerJsonVariableRef;
 
 export interface SwaggerJsonRouteParametersPath {
   in: "path";
@@ -63,13 +67,28 @@ export interface SwaggerJsonRouteParametersQuery {
 export interface SwaggerJsonRouteRequestBody {
   content: {
     "application/json": {
-      schema: SwaggerJsonVariable;
+      schema:
+        | SwaggerJsonVariable
+        | { oneOf: SwaggerJsonVariable[] }
+        | { allOf: SwaggerJsonVariable[] }
+        | { anyOf: SwaggerJsonVariable[] }
+        | SwaggerJsonVariableRef;
     };
   };
 }
 
+export type SwaggerJsonRouteResponse = {
+  description: string;
+  response?:
+    | ObjectType<SwaggerJsonVariable>
+    | { oneOf: SwaggerJsonVariable[] }
+    | { allOf: SwaggerJsonVariable[] }
+    | { anyOf: SwaggerJsonVariable[] }
+    | SwaggerJsonVariableRef;
+};
+
 export type SwaggerJsonRouteResponses = {
-  [key: number]: RequestResponse;
+  [key: number]: SwaggerJsonRouteResponse;
 };
 
 export interface SwaggerJsonRoute {

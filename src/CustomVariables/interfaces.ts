@@ -71,22 +71,6 @@ export interface VariableObject extends BaseVariableType {
   maxProperties?: number;
 }
 
-export interface VariableOneOf extends BaseVariableType {
-  type: "oneOf";
-  subSchemas: Variable[];
-  discriminator?: string;
-}
-
-export interface VariableAnyOf extends BaseVariableType {
-  type: "anyOf";
-  subSchemas: Variable[];
-}
-
-export interface VariableAllOf extends BaseVariableType {
-  type: "allOf";
-  subSchemas: Variable[];
-}
-
 export interface VariableRef extends BaseVariableType {
   type: "ref";
   ref: string;
@@ -101,7 +85,20 @@ export type Variable =
   | VariablePassword
   | VariableArray
   | VariableObject
-  | VariableAllOf
-  | VariableAnyOf
-  | VariableOneOf
   | VariableRef;
+
+export interface oneOf<T> {
+  type: "oneOf";
+  subSchemas: T[];
+  discriminator?: string;
+}
+
+export interface anyOf<T> {
+  type: "anyOf";
+  subSchemas: T[];
+}
+
+export interface allOf<T> {
+  type: "allOf";
+  subSchemas: T[];
+}

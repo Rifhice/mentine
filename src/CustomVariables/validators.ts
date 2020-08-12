@@ -257,9 +257,11 @@ export const validateVariable = (variable: Variable) => {
     boolean: validateBooleanVariable,
     array: validateArrayVariable,
     object: validateObjectVariable,
+    ref: validateRefVariable,
   };
   if (typeof typeValidatorMap[variable.type] !== "function") {
-    throw new Error("Unknown variable type");
+    throw new Error("Unknown variable type " + JSON.stringify(variable));
   }
+  //@ts-ignore
   typeValidatorMap[variable.type](variable);
 };

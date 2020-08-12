@@ -18,7 +18,29 @@ export const validateRequestResponse = (requestResponse: RequestResponse) => {
     if (!isAnObject(response)) {
       throw new Error("Response should be an object");
     }
-    validateVariable(response);
+    if (response.type === "allOf") {
+      for (const value of response.subSchemas) {
+        for (const variable of Object.values(value)) {
+          validateVariable(variable);
+        }
+      }
+    } else if (response.type === "anyOf") {
+      for (const value of response.subSchemas) {
+        for (const variable of Object.values(value)) {
+          validateVariable(variable);
+        }
+      }
+    } else if (response.type === "oneOf") {
+      for (const value of response.subSchemas) {
+        for (const variable of Object.values(value)) {
+          validateVariable(variable);
+        }
+      }
+    } else {
+      for (const value of Object.values(response)) {
+        validateVariable(value);
+      }
+    }
   }
 };
 
@@ -29,8 +51,28 @@ export const validatePostRoute = (postRoute: PostRoute) => {
     if (!isAnObject(body)) {
       throw new Error("Body should be an object");
     }
-    for (const value of Object.values(body)) {
-      validateVariable(value);
+    if (body.type === "allOf") {
+      for (const value of body.subSchemas) {
+        for (const variable of Object.values(value)) {
+          validateVariable(variable);
+        }
+      }
+    } else if (body.type === "anyOf") {
+      for (const value of body.subSchemas) {
+        for (const variable of Object.values(value)) {
+          validateVariable(variable);
+        }
+      }
+    } else if (body.type === "oneOf") {
+      for (const value of body.subSchemas) {
+        for (const variable of Object.values(value)) {
+          validateVariable(variable);
+        }
+      }
+    } else {
+      for (const value of Object.values(body)) {
+        validateVariable(value);
+      }
     }
   }
 };
@@ -42,8 +84,28 @@ export const validatePutRoute = (putRoute: PutRoute) => {
     if (!isAnObject(body)) {
       throw new Error("Body should be an object");
     }
-    for (const value of Object.values(body)) {
-      validateVariable(value);
+    if (body.type === "allOf") {
+      for (const value of body.subSchemas) {
+        for (const variable of Object.values(value)) {
+          validateVariable(variable);
+        }
+      }
+    } else if (body.type === "anyOf") {
+      for (const value of body.subSchemas) {
+        for (const variable of Object.values(value)) {
+          validateVariable(variable);
+        }
+      }
+    } else if (body.type === "oneOf") {
+      for (const value of body.subSchemas) {
+        for (const variable of Object.values(value)) {
+          validateVariable(variable);
+        }
+      }
+    } else {
+      for (const value of Object.values(body)) {
+        validateVariable(value);
+      }
     }
   }
 };
@@ -57,7 +119,7 @@ export const validateDeleteRoute = (deleteRoute: DeleteRoute) => {
 };
 
 export const validateRoute = (route: Route) => {
-  if (!isAnObject(route)) throw new Error("Route is a required required");
+  if (!isAnObject(route)) throw new Error("Route is required");
   if (route.method === "get") {
     return validateGetRoute(route);
   } else if (route.method === "post") {
