@@ -5,10 +5,11 @@ import {
   PostRoute,
   PutRoute,
   RequestResponse,
-} from "../../interfaces";
+} from "../interfaces";
 import {
   validateBaseRouteObject,
   validatePostRoute,
+  validatePutRoute,
   validateRequestResponse,
   validateRoute,
 } from "../validators";
@@ -24,6 +25,8 @@ describe("Validate route object", () => {
       id: {
         type: "string",
         description: "Id of user",
+        example: "3",
+        required: true,
       },
     },
     responses: {
@@ -42,6 +45,8 @@ describe("Validate route object", () => {
       id: {
         type: "string",
         description: "Id of user",
+        example: "3",
+        required: true,
       },
     },
     body: {
@@ -123,6 +128,8 @@ describe("Validate route object", () => {
       id: {
         type: "string",
         description: "Id of user",
+        example: "3",
+        required: true,
       },
     },
     body: {
@@ -204,6 +211,8 @@ describe("Validate route object", () => {
       id: {
         type: "string",
         description: "Id of user",
+        example: "3",
+        required: true,
       },
     },
     responses: {
@@ -293,6 +302,8 @@ describe("Validate route object", () => {
         id: {
           type: "string",
           description: "Id of user",
+          example: "3",
+          required: true,
         },
       },
       responses: {
@@ -590,14 +601,14 @@ describe("Validate route object", () => {
     });
   });
   describe("validate PUT route", () => {
-    let copyPutRoute: PostRoute;
+    let copyPutRoute: PutRoute;
 
     beforeEach(
       () => (copyPutRoute = JSON.parse(JSON.stringify(validPutRoute)))
     );
 
     test("Body is an optional valid variable", () => {
-      const func = () => validatePostRoute(copyPutRoute);
+      const func = () => validatePutRoute(copyPutRoute);
       delete copyPutRoute.body;
 
       //@ts-ignore
@@ -632,8 +643,6 @@ describe("Validate route object", () => {
         },
       };
       expect(func).not.toThrowError(Error);
-
-      expect(func).not.toThrowError(Error);
     });
   });
   describe("validate DELETE route", () => {});
@@ -642,5 +651,7 @@ describe("Validate route object", () => {
     expect(() => validateRoute(validPostRoute)).not.toThrowError(Error);
     expect(() => validateRoute(validPutRoute)).not.toThrowError(Error);
     expect(() => validateRoute(validDeleteRoute)).not.toThrowError(Error);
+    //@ts-ignore
+    expect(() => validateRoute({ method: "lol" })).toThrowError(Error);
   });
 });

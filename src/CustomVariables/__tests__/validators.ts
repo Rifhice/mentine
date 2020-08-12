@@ -39,6 +39,12 @@ describe("Test validateBaseVariable", () => {
     const func = () => validateBaseVariable(copyValidVariable);
     expect(func).toThrowError(Error);
   });
+  test("Type is required", () => {
+    //@ts-ignore
+    copyValidVariable.type = "lol";
+    const func = () => validateBaseVariable(copyValidVariable);
+    expect(func).toThrowError(Error);
+  });
   test("Description is a required string", () => {
     const func = () => validateBaseVariable(copyValidVariable);
     //@ts-ignore

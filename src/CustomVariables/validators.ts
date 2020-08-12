@@ -150,7 +150,7 @@ export const validateNumberVariable = (numberVariable: VariableNumber) => {
     maximum,
     multipleOf,
   } = numberVariable;
-  if (!example) throw new Error("Example is required");
+  if (typeof example === "undefined") throw new Error("Example is required");
   if (typeof example !== "number")
     throw new Error("Example should be a number");
   if (exclusiveMaximum) {
@@ -193,7 +193,7 @@ export const validateIntegerVariable = (numberVariable: VariableInteger) => {
     maximum,
     multipleOf,
   } = numberVariable;
-  if (!example) throw new Error("Example is required");
+  if (typeof example === "undefined") throw new Error("Example is required");
   if (typeof example !== "number")
     throw new Error("Example should be a number");
   if (exclusiveMaximum) {

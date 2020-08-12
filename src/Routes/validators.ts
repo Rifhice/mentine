@@ -1,3 +1,5 @@
+import { validateVariable } from "../CustomVariables/validators";
+import { isAnObject } from "../utils";
 import {
   DeleteRoute,
   GetRoute,
@@ -5,9 +7,7 @@ import {
   PutRoute,
   RequestResponse,
   Route,
-} from "../interfaces";
-import { validateVariable } from "../SwaggerVariables/validators";
-import { isAnObject } from "../utils";
+} from "./interfaces";
 
 export const validateRequestResponse = (requestResponse: RequestResponse) => {
   const { description, response } = requestResponse;
