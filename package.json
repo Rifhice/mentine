@@ -8,7 +8,8 @@
     "start": "tsc && node dist/index.js",
     "dev": "concurrently -k -n \"Typescript,Node\" -p \"[{name}]\" -c \"blue,green\" \"tsc --watch\" \"nodemon\"",
     "prepare": "tsc",
-    "prepublishOnly": "npm test"
+    "prepublishOnly": "npm test",
+    "publish": "npm publish --access public"
   },
   "keywords": [],
   "author": "",
