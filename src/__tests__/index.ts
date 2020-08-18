@@ -1,5 +1,5 @@
-import { convertEntityToOpenApi, convertRouteToOpenApi } from "../converters";
 import * as entityConverters from "../Entity/converters";
+import { convertEntityToOpenApi, convertRouteToOpenApi } from "../index";
 import * as routeConverters from "../Route/converters";
 
 describe("convertRouteToOpenApi", () => {
