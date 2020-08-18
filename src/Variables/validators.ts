@@ -11,7 +11,6 @@ import {
   VariableRef,
   VariableString,
 } from "./interfaces";
-const YAML = require("json2yaml");
 
 export const validateBaseVariable = (variable: Variable) => {
   const {
