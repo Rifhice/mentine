@@ -1,57 +1,23 @@
-import { Variable, VariableRef } from "./CustomVariables/interfaces";
-import { validateVariable } from "./CustomVariables/validators";
-import {
-  PathVariables,
-  QueryVariables,
-  RequestBody,
-  RequestResponses,
-  Route,
-} from "./Routes/interfaces";
-import { validateRoute } from "./Routes/validators";
 import {
   SwaggerJsonRoute,
   SwaggerJsonRouteParametersPath,
   SwaggerJsonRouteParametersQuery,
   SwaggerJsonRouteRequestBody,
   SwaggerJsonRouteResponses,
-  SwaggerJsonVariable,
-} from "./SwaggerJsonTypes/interfaces";
+} from "../SwaggerJsonTypes/interfaces";
+import { convertVariableToSwaggerVariable } from "../Variables/converters";
+import { VariableRef } from "../Variables/interfaces";
+import { validateVariable } from "../Variables/validators";
+import {
+  PathVariables,
+  QueryVariables,
+  RequestBody,
+  RequestResponses,
+  Route,
+} from "./interfaces";
+import { validateRoute } from "./validators";
 
-const YAML = require("json2yaml");
-
-export const convertCustomVariableToSwaggerVariable = (
-  variable: Variable
-): SwaggerJsonVariable => {
-  if (variable.type === "object") {
-    return {
-      ...variable,
-      properties: Object.fromEntries(
-        Object.entries(variable.properties).map(([name, variable]) => [
-          name,
-          convertCustomVariableToSwaggerVariable(variable),
-        ])
-      ),
-      required: Object.entries(variable.properties)
-        .filter(([name, variable]) => variable.required)
-        .map(([name, variable]) => name),
-    };
-  }
-  if (variable.type === "array") {
-    return {
-      ...variable,
-      items: convertCustomVariableToSwaggerVariable(variable.items),
-    };
-  }
-  if (variable.type === "ref") {
-    return {
-      $ref: variable.ref,
-    };
-  }
-  const { required, ...swaggerVariable } = variable;
-  return swaggerVariable as SwaggerJsonVariable;
-};
-
-export const convertCustomPathVariableToOpenAPIJsonFormat = (
+export const convertPathVariableToOpenAPIJsonFormat = (
   pathVariables: PathVariables
 ): Array<SwaggerJsonRouteParametersPath> => {
   for (const variable of Object.values(pathVariables)) {
@@ -66,7 +32,7 @@ export const convertCustomPathVariableToOpenAPIJsonFormat = (
   }));
 };
 
-export const convertCustomQueryVariableToOpenAPIJsonFormat = (
+export const convertQueryVariableToOpenAPIJsonFormat = (
   queryVariables: QueryVariables
 ): Array<SwaggerJsonRouteParametersQuery> => {
   for (const variable of Object.values(queryVariables)) {
@@ -83,7 +49,7 @@ export const convertCustomQueryVariableToOpenAPIJsonFormat = (
   );
 };
 
-export const convertCustomResponseToOpenAPIJsonFormat = (
+export const convertResponseToOpenAPIJsonFormat = (
   responses: RequestResponses
 ): SwaggerJsonRouteResponses => {
   const returnValue: SwaggerJsonRouteResponses = {};
@@ -109,13 +75,13 @@ export const convertCustomResponseToOpenAPIJsonFormat = (
         description: response.description,
         [response.response.type]: response.response.subSchemas.map((schema) =>
           schema.type === "ref"
-            ? convertCustomVariableToSwaggerVariable(schema as VariableRef)
+            ? convertVariableToSwaggerVariable(schema as VariableRef)
             : {
                 type: "object",
                 properties: Object.fromEntries(
                   Object.entries(schema).map(([name, variable]) => [
                     name,
-                    convertCustomVariableToSwaggerVariable(variable),
+                    convertVariableToSwaggerVariable(variable),
                   ])
                 ),
                 description: "root",
@@ -137,7 +103,7 @@ export const convertCustomResponseToOpenAPIJsonFormat = (
           properties: Object.fromEntries(
             Object.entries(response.response).map(([name, variable]) => [
               name,
-              convertCustomVariableToSwaggerVariable(variable),
+              convertVariableToSwaggerVariable(variable),
             ])
           ),
           required: Object.entries(response.response)
@@ -150,7 +116,7 @@ export const convertCustomResponseToOpenAPIJsonFormat = (
   return returnValue;
 };
 
-export const convertCustomBodyToOpenAPIJsonFormat = (
+export const convertBodyToOpenAPIJsonFormat = (
   body: RequestBody
 ): SwaggerJsonRouteRequestBody => {
   if (body.type === "oneOf" || body.type === "anyOf" || body.type === "allOf") {
@@ -169,14 +135,14 @@ export const convertCustomBodyToOpenAPIJsonFormat = (
           schema: {
             [body.type]: body.subSchemas.map((schema) =>
               schema.type === "ref"
-                ? convertCustomVariableToSwaggerVariable(schema as VariableRef)
+                ? convertVariableToSwaggerVariable(schema as VariableRef)
                 : {
                     type: "object",
                     description: "root",
                     properties: Object.fromEntries(
                       Object.entries(schema).map(([name, variable]) => [
                         name,
-                        convertCustomVariableToSwaggerVariable(variable),
+                        convertVariableToSwaggerVariable(variable),
                       ])
                     ),
                     required: Object.entries(schema)
@@ -200,7 +166,7 @@ export const convertCustomBodyToOpenAPIJsonFormat = (
             properties: Object.fromEntries(
               Object.entries(body).map(([name, variable]) => [
                 name,
-                convertCustomVariableToSwaggerVariable(variable),
+                convertVariableToSwaggerVariable(variable),
               ])
             ),
             description: "root",
@@ -214,7 +180,7 @@ export const convertCustomBodyToOpenAPIJsonFormat = (
   }
 };
 
-export const convertCustomRouteToOpenAPIJsonFormat = (
+export const convertRouteToOpenAPIJsonFormat = (
   doc: Route
 ): SwaggerJsonRoute => {
   validateRoute(doc);
@@ -241,25 +207,17 @@ export const convertCustomRouteToOpenAPIJsonFormat = (
           ? {
               parameters: [
                 ...(pathVariables
-                  ? convertCustomPathVariableToOpenAPIJsonFormat(pathVariables)
+                  ? convertPathVariableToOpenAPIJsonFormat(pathVariables)
                   : []),
                 ...(queryVariables
-                  ? convertCustomQueryVariableToOpenAPIJsonFormat(
-                      queryVariables
-                    )
+                  ? convertQueryVariableToOpenAPIJsonFormat(queryVariables)
                   : []),
               ],
             }
           : {}),
-        ...(body
-          ? { requestBody: convertCustomBodyToOpenAPIJsonFormat(body) }
-          : {}),
-        responses: convertCustomResponseToOpenAPIJsonFormat(responses),
+        ...(body ? { requestBody: convertBodyToOpenAPIJsonFormat(body) } : {}),
+        responses: convertResponseToOpenAPIJsonFormat(responses),
       },
     },
   } as SwaggerJsonRoute;
-};
-
-export const convertTsDocToYaml = (doc: SwaggerJsonRoute) => {
-  return YAML.stringify(doc).replace("---\n", "");
 };

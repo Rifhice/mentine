@@ -1,11 +1,11 @@
+import { HttpVerb, ObjectType } from "../interfaces";
 import {
   allOf,
   anyOf,
   oneOf,
   Variable,
   VariableRef,
-} from "../CustomVariables/interfaces";
-import { HttpVerb, ObjectType } from "../interfaces";
+} from "../Variables/interfaces";
 
 export type RequestResponses = {
   [key: number]: RequestResponse;
@@ -33,6 +33,7 @@ export type RequestBody =
 export type Route = GetRoute | PostRoute | PutRoute | DeleteRoute;
 
 export interface BaseRoute {
+  simplified: true;
   path: string;
   method: HttpVerb;
   tag: string;

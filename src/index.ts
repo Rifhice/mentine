@@ -1,11 +1,5 @@
 #!/usr/bin/env node
 
-import { Route } from "./Routes/interfaces";
-import {
-  convertCustomRouteToOpenAPIJsonFormat,
-  convertTsDocToYaml,
-} from "./tsToYamlConverter";
-
 const glob = require("glob");
 const fs = require("fs");
 const { program } = require("commander");
@@ -39,18 +33,18 @@ getDirectories(srcPath, async function (err, res) {
     files.map(
       (file) =>
         new Promise((r) => {
-          const requiredFile = require(path.join(process.cwd(), file));
-          const yaml = convertTsDocToYaml(
-            convertCustomRouteToOpenAPIJsonFormat(
-              Object.values(requiredFile)[0] as Route
-            )
-          );
-          const jsDoc = `/**\n* @swagger\n${yaml
-            .split("\n")
-            .map((line) => `* ${line}`)
-            .join("\n")}\n*/`;
-          fs.writeFileSync(file.replace(readExtension, writeExtension), jsDoc);
-          r();
+          // const requiredFile = require(path.join(process.cwd(), file));
+          // const yaml = convertTsDocToYaml(
+          //   convertRouteToOpenAPIJsonFormat(
+          //     Object.values(requiredFile)[0] as Route
+          //   )
+          // );
+          // const jsDoc = `/**\n* @swagger\n${yaml
+          //   .split("\n")
+          //   .map((line) => `* ${line}`)
+          //   .join("\n")}\n*/`;
+          // fs.writeFileSync(file.replace(readExtension, writeExtension), jsDoc);
+          // r();
         })
     )
   );

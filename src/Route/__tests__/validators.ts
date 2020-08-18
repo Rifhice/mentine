@@ -16,6 +16,7 @@ import {
 
 describe("Validate route object", () => {
   const validGetRoute: GetRoute = {
+    simplified: true,
     path: "/api/user/:id/blacklist",
     method: "get",
     tag: "User",
@@ -36,6 +37,7 @@ describe("Validate route object", () => {
     },
   };
   const validPutRoute: PutRoute = {
+    simplified: true,
     path: "/api/user/:id/blacklist",
     method: "put",
     tag: "User",
@@ -119,6 +121,7 @@ describe("Validate route object", () => {
     },
   };
   const validPostRoute: PostRoute = {
+    simplified: true,
     path: "/api/user/:id/blacklist",
     method: "post",
     tag: "User",
@@ -202,6 +205,7 @@ describe("Validate route object", () => {
     },
   };
   const validDeleteRoute: DeleteRoute = {
+    simplified: true,
     path: "/api/user/:id/blacklist",
     method: "delete",
     tag: "User",
@@ -459,6 +463,7 @@ describe("Validate route object", () => {
 
   describe("Test validateBaseRouteObject", () => {
     const doc: BaseRoute = {
+      simplified: true,
       path: "/api/user/:id/blacklist",
       method: "put",
       tag: "User",

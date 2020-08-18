@@ -1,5 +1,5 @@
-import { validateVariable } from "../CustomVariables/validators";
 import { isAnObject } from "../utils";
+import { validateVariable } from "../Variables/validators";
 import {
   DeleteRoute,
   GetRoute,

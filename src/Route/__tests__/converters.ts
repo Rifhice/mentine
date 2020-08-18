@@ -1,22 +1,21 @@
-import { VariableObject } from "../CustomVariables/interfaces";
-import * as validators from "../CustomVariables/validators";
+import * as validators from "../../Variables/validators";
+import {
+  convertBodyToOpenAPIJsonFormat,
+  convertPathVariableToOpenAPIJsonFormat,
+  convertQueryVariableToOpenAPIJsonFormat,
+  convertResponseToOpenAPIJsonFormat,
+  convertRouteToOpenAPIJsonFormat,
+} from "../converters";
 import {
   PathVariables,
   QueryVariables,
   RequestBody,
   RequestResponses,
   Route,
-} from "../Routes/interfaces";
-import {
-  convertCustomBodyToOpenAPIJsonFormat,
-  convertCustomPathVariableToOpenAPIJsonFormat,
-  convertCustomQueryVariableToOpenAPIJsonFormat,
-  convertCustomResponseToOpenAPIJsonFormat,
-  convertCustomRouteToOpenAPIJsonFormat,
-  convertCustomVariableToSwaggerVariable,
-} from "../tsToYamlConverter";
+} from "../interfaces";
 
 const doc: Route = {
+  simplified: true,
   path: "/api/user/:id/blacklist",
   method: "put",
   tag: "User",
@@ -53,51 +52,7 @@ const doc: Route = {
   },
 };
 
-describe("Test convertCustomVariableToSwaggerVariable", () => {
-  const validVariable: VariableObject = {
-    type: "object",
-    description: "Specific id",
-    properties: {
-      salut: {
-        type: "string",
-        description: "hello",
-        example: "hi",
-        required: true,
-      },
-      mdr: {
-        type: "string",
-        description: "hello",
-        example: "hi",
-        required: false,
-      },
-    },
-    required: true,
-  };
-  let copyVariable: VariableObject;
-  beforeEach(() => (copyVariable = JSON.parse(JSON.stringify(validVariable))));
-  test("Should return a valid SwaggerVariable", () => {
-    const res = convertCustomVariableToSwaggerVariable(copyVariable);
-    expect(res).toEqual({
-      type: "object",
-      description: copyVariable.description,
-      properties: {
-        salut: {
-          type: "string",
-          description: "hello",
-          example: "hi",
-        },
-        mdr: {
-          type: "string",
-          description: "hello",
-          example: "hi",
-        },
-      },
-      required: ["salut"],
-    });
-  });
-});
-
-describe("Test convertCustomPathVariableToOpenAPIJsonFormat", () => {
+describe("Test convertPathVariableToOpenAPIJsonFormat", () => {
   const validPathVariables: PathVariables = {
     id: {
       type: "string",
@@ -119,14 +74,12 @@ describe("Test convertCustomPathVariableToOpenAPIJsonFormat", () => {
   test("Should call validateVariable for each values", () => {
     const spy = jest.spyOn(validators, "validateVariable");
     const func = () =>
-      convertCustomPathVariableToOpenAPIJsonFormat(copyPathVariables);
+      convertPathVariableToOpenAPIJsonFormat(copyPathVariables);
     expect(func).not.toThrow(Error);
     expect(spy).toHaveBeenCalledTimes(2);
   });
   test("Should return a valid array of SwaggerJsonRouteParametersPath", () => {
-    const result = convertCustomPathVariableToOpenAPIJsonFormat(
-      copyPathVariables
-    );
+    const result = convertPathVariableToOpenAPIJsonFormat(copyPathVariables);
     expect(result).toEqual(
       Object.entries(copyPathVariables).map(
         ([name, { description, type, required }]) => ({
@@ -141,7 +94,7 @@ describe("Test convertCustomPathVariableToOpenAPIJsonFormat", () => {
   });
 });
 
-describe("Test convertCustomQueryVariableToOpenAPIJsonFormat", () => {
+describe("Test convertQueryVariableToOpenAPIJsonFormat", () => {
   const validQueryVariables: QueryVariables = {
     start: {
       type: "integer",
@@ -164,15 +117,13 @@ describe("Test convertCustomQueryVariableToOpenAPIJsonFormat", () => {
     jest.resetAllMocks();
     const spy = jest.spyOn(validators, "validateVariable");
     const func = () =>
-      convertCustomQueryVariableToOpenAPIJsonFormat(copyQueryVariables);
+      convertQueryVariableToOpenAPIJsonFormat(copyQueryVariables);
     expect(func).not.toThrow(Error);
     expect(spy).toHaveBeenCalledTimes(2);
   });
 
   test("Should return a valid array of SwaggerJsonRouteParametersQuery", () => {
-    const result = convertCustomQueryVariableToOpenAPIJsonFormat(
-      copyQueryVariables
-    );
+    const result = convertQueryVariableToOpenAPIJsonFormat(copyQueryVariables);
     expect(result).toEqual(
       Object.entries(copyQueryVariables).map(
         ([name, { description, type, required }]) => ({
@@ -187,7 +138,7 @@ describe("Test convertCustomQueryVariableToOpenAPIJsonFormat", () => {
   });
 });
 
-describe("Test convertCustomResponseToOpenAPIJsonFormat", () => {
+describe("Test convertResponseToOpenAPIJsonFormat", () => {
   describe("Convert map of variables", () => {
     const validResponses: RequestResponses = {
       204: {
@@ -212,8 +163,7 @@ describe("Test convertCustomResponseToOpenAPIJsonFormat", () => {
     test("Should call validateVariable for each responses", () => {
       jest.resetAllMocks();
       const spy = jest.spyOn(validators, "validateVariable");
-      const func = () =>
-        convertCustomResponseToOpenAPIJsonFormat(copyResponses);
+      const func = () => convertResponseToOpenAPIJsonFormat(copyResponses);
       expect(func).not.toThrow(Error);
       expect(spy).toHaveBeenCalledTimes(1);
     });
@@ -253,14 +203,13 @@ describe("Test convertCustomResponseToOpenAPIJsonFormat", () => {
     test("Should call validateVariable for each values", () => {
       jest.resetAllMocks();
       const spy = jest.spyOn(validators, "validateVariable");
-      const func = () =>
-        convertCustomResponseToOpenAPIJsonFormat(copyResponses);
+      const func = () => convertResponseToOpenAPIJsonFormat(copyResponses);
       expect(func).not.toThrow(Error);
       expect(spy).toHaveBeenCalledTimes(2);
     });
 
     test("Should return a valid SwaggerJsonRouteRequestBody", () => {
-      const res = convertCustomResponseToOpenAPIJsonFormat(copyResponses);
+      const res = convertResponseToOpenAPIJsonFormat(copyResponses);
       expect(res).toEqual({
         201: {
           description: "Success",
@@ -329,14 +278,13 @@ describe("Test convertCustomResponseToOpenAPIJsonFormat", () => {
     test("Should call validateVariable for each values", () => {
       jest.resetAllMocks();
       const spy = jest.spyOn(validators, "validateVariable");
-      const func = () =>
-        convertCustomResponseToOpenAPIJsonFormat(copyResponses);
+      const func = () => convertResponseToOpenAPIJsonFormat(copyResponses);
       expect(func).not.toThrow(Error);
       expect(spy).toHaveBeenCalledTimes(2);
     });
 
     test("Should return a valid SwaggerJsonRouteRequestBody", () => {
-      const res = convertCustomResponseToOpenAPIJsonFormat(copyResponses);
+      const res = convertResponseToOpenAPIJsonFormat(copyResponses);
       expect(res).toEqual({
         201: {
           description: "Success",
@@ -418,14 +366,13 @@ describe("Test convertCustomResponseToOpenAPIJsonFormat", () => {
     test("Should call validateVariable for each values", () => {
       jest.resetAllMocks();
       const spy = jest.spyOn(validators, "validateVariable");
-      const func = () =>
-        convertCustomResponseToOpenAPIJsonFormat(copyResponses);
+      const func = () => convertResponseToOpenAPIJsonFormat(copyResponses);
       expect(func).not.toThrow(Error);
       expect(spy).toHaveBeenCalledTimes(4);
     });
 
     test("Should return a valid SwaggerJsonRouteRequestBody", () => {
-      const res = convertCustomResponseToOpenAPIJsonFormat(copyResponses);
+      const res = convertResponseToOpenAPIJsonFormat(copyResponses);
       expect(res).toEqual({
         201: {
           description: "Success",
@@ -474,7 +421,7 @@ describe("Test convertCustomResponseToOpenAPIJsonFormat", () => {
   });
 });
 
-describe("Test convertCustomBodyToOpenAPIJsonFormat", () => {
+describe("Test convertBodyToOpenAPIJsonFormat", () => {
   describe("Convert map of variables", () => {
     const validBody: RequestBody = {
       blacklist: {
@@ -495,13 +442,13 @@ describe("Test convertCustomBodyToOpenAPIJsonFormat", () => {
     test("Should call validateVariable for each values", () => {
       jest.resetAllMocks();
       const spy = jest.spyOn(validators, "validateVariable");
-      const func = () => convertCustomBodyToOpenAPIJsonFormat(copyBody);
+      const func = () => convertBodyToOpenAPIJsonFormat(copyBody);
       expect(func).not.toThrow(Error);
       expect(spy).toHaveBeenCalledTimes(2);
     });
 
     test("Should return a valid SwaggerJsonRouteRequestBody", () => {
-      const res = convertCustomBodyToOpenAPIJsonFormat(copyBody);
+      const res = convertBodyToOpenAPIJsonFormat(copyBody);
       expect(res).toEqual({
         content: {
           "application/json": {
@@ -561,13 +508,13 @@ describe("Test convertCustomBodyToOpenAPIJsonFormat", () => {
     test("Should call validateVariable for each values", () => {
       jest.resetAllMocks();
       const spy = jest.spyOn(validators, "validateVariable");
-      const func = () => convertCustomBodyToOpenAPIJsonFormat(copyBody);
+      const func = () => convertBodyToOpenAPIJsonFormat(copyBody);
       expect(func).not.toThrow(Error);
       expect(spy).toHaveBeenCalledTimes(3);
     });
 
     test("Should return a valid SwaggerJsonRouteRequestBody", () => {
-      const res = convertCustomBodyToOpenAPIJsonFormat(copyBody);
+      const res = convertBodyToOpenAPIJsonFormat(copyBody);
       expect(res).toEqual({
         content: {
           "application/json": {
@@ -642,13 +589,13 @@ describe("Test convertCustomBodyToOpenAPIJsonFormat", () => {
     test("Should call validateVariable for each values", () => {
       jest.resetAllMocks();
       const spy = jest.spyOn(validators, "validateVariable");
-      const func = () => convertCustomBodyToOpenAPIJsonFormat(copyBody);
+      const func = () => convertBodyToOpenAPIJsonFormat(copyBody);
       expect(func).not.toThrow(Error);
       expect(spy).toHaveBeenCalledTimes(3);
     });
 
     test("Should return a valid SwaggerJsonRouteRequestBody", () => {
-      const res = convertCustomBodyToOpenAPIJsonFormat(copyBody);
+      const res = convertBodyToOpenAPIJsonFormat(copyBody);
       expect(res).toEqual({
         content: {
           "application/json": {
@@ -738,13 +685,13 @@ describe("Test convertCustomBodyToOpenAPIJsonFormat", () => {
     test("Should call validateVariable for each values", () => {
       jest.resetAllMocks();
       const spy = jest.spyOn(validators, "validateVariable");
-      const func = () => convertCustomBodyToOpenAPIJsonFormat(copyBody);
+      const func = () => convertBodyToOpenAPIJsonFormat(copyBody);
       expect(func).not.toThrow(Error);
       expect(spy).toHaveBeenCalledTimes(5);
     });
 
     test("Should return a valid SwaggerJsonRouteRequestBody", () => {
-      const res = convertCustomBodyToOpenAPIJsonFormat(copyBody);
+      const res = convertBodyToOpenAPIJsonFormat(copyBody);
       expect(res).toEqual({
         content: {
           "application/json": {
@@ -801,20 +748,20 @@ describe("Test convertCustomBodyToOpenAPIJsonFormat", () => {
   });
 });
 
-describe("Test convertCustomRouteToOpenAPIJsonFormat", () => {
+describe("Test convertRouteToOpenAPIJsonFormat", () => {
   let routeCopy: Route;
   beforeEach(() => (routeCopy = JSON.parse(JSON.stringify(doc))));
 
   test("Path should be the top level key", () => {
-    const converted = convertCustomRouteToOpenAPIJsonFormat(routeCopy);
+    const converted = convertRouteToOpenAPIJsonFormat(routeCopy);
     expect(Object.keys(converted)[0]).toEqual(routeCopy.path);
   });
   test("Method should be the first key after the path key", () => {
-    const converted = convertCustomRouteToOpenAPIJsonFormat(routeCopy);
+    const converted = convertRouteToOpenAPIJsonFormat(routeCopy);
     expect(Object.keys(converted[routeCopy.path])[0]).toEqual(routeCopy.method);
   });
   test("Tags should be the first key after the method key and contain one element", () => {
-    const converted = convertCustomRouteToOpenAPIJsonFormat(routeCopy);
+    const converted = convertRouteToOpenAPIJsonFormat(routeCopy);
     expect(Object.keys(converted[routeCopy.path][routeCopy.method])[0]).toEqual(
       "tags"
     );
@@ -824,7 +771,7 @@ describe("Test convertCustomRouteToOpenAPIJsonFormat", () => {
     );
   });
   test("Summary should be referenced at the same level as tags", () => {
-    const converted = convertCustomRouteToOpenAPIJsonFormat(routeCopy);
+    const converted = convertRouteToOpenAPIJsonFormat(routeCopy);
     expect(
       Object.keys(converted[routeCopy.path][routeCopy.method]).includes(
         "summary"
@@ -832,7 +779,7 @@ describe("Test convertCustomRouteToOpenAPIJsonFormat", () => {
     ).toBe(true);
   });
   test("Description should be referenced at the same level as tags", () => {
-    const converted = convertCustomRouteToOpenAPIJsonFormat(routeCopy);
+    const converted = convertRouteToOpenAPIJsonFormat(routeCopy);
     expect(
       Object.keys(converted[routeCopy.path][routeCopy.method]).includes(
         "description"
@@ -840,7 +787,7 @@ describe("Test convertCustomRouteToOpenAPIJsonFormat", () => {
     ).toBe(true);
   });
   test("Consumes key should be referenced at the same level as tags and have an array containing 'application/json'", () => {
-    const converted = convertCustomRouteToOpenAPIJsonFormat(routeCopy);
+    const converted = convertRouteToOpenAPIJsonFormat(routeCopy);
     expect(
       Object.keys(converted[routeCopy.path][routeCopy.method]).includes(
         "consumes"
@@ -855,7 +802,7 @@ describe("Test convertCustomRouteToOpenAPIJsonFormat", () => {
   });
 
   test("Parameters key should be referenced at the same level as tags and have an array containing object representing path variable and query", () => {
-    const converted = convertCustomRouteToOpenAPIJsonFormat(routeCopy);
+    const converted = convertRouteToOpenAPIJsonFormat(routeCopy);
     expect(
       Object.keys(converted[routeCopy.path][routeCopy.method]).includes(
         "parameters"
@@ -868,7 +815,7 @@ describe("Test convertCustomRouteToOpenAPIJsonFormat", () => {
   test("Parameters shouldn't be referenced if there is neither path variables or query", () => {
     delete routeCopy.pathVariables;
     delete routeCopy.queryVariables;
-    const converted = convertCustomRouteToOpenAPIJsonFormat(routeCopy);
+    const converted = convertRouteToOpenAPIJsonFormat(routeCopy);
     expect(
       Object.keys(converted[routeCopy.path][routeCopy.method]).includes(
         "parameters"
@@ -877,7 +824,7 @@ describe("Test convertCustomRouteToOpenAPIJsonFormat", () => {
   });
   test("Parameters should contain all path variables in path", () => {
     delete routeCopy.queryVariables;
-    const converted = convertCustomRouteToOpenAPIJsonFormat(routeCopy);
+    const converted = convertRouteToOpenAPIJsonFormat(routeCopy);
     expect(
       Object.keys(converted[routeCopy.path][routeCopy.method]).includes(
         "parameters"
@@ -899,7 +846,7 @@ describe("Test convertCustomRouteToOpenAPIJsonFormat", () => {
   });
   test("Parameters should contain all query variables in query", () => {
     delete routeCopy.pathVariables;
-    const converted = convertCustomRouteToOpenAPIJsonFormat(routeCopy);
+    const converted = convertRouteToOpenAPIJsonFormat(routeCopy);
     expect(
       Object.keys(converted[routeCopy.path][routeCopy.method]).includes(
         "parameters"
@@ -920,7 +867,7 @@ describe("Test convertCustomRouteToOpenAPIJsonFormat", () => {
     });
   });
   test("Request body optional key should be referenced at the same level as tags and have an object representing the body", () => {
-    const converted = convertCustomRouteToOpenAPIJsonFormat(routeCopy);
+    const converted = convertRouteToOpenAPIJsonFormat(routeCopy);
     expect(
       Object.keys(converted[routeCopy.path][routeCopy.method]).includes(
         "requestBody"
@@ -928,7 +875,7 @@ describe("Test convertCustomRouteToOpenAPIJsonFormat", () => {
     ).toBe(true);
     //@ts-ignore
     delete routeCopy.body;
-    const converted2 = convertCustomRouteToOpenAPIJsonFormat(routeCopy);
+    const converted2 = convertRouteToOpenAPIJsonFormat(routeCopy);
     expect(
       Object.keys(converted2[routeCopy.path][routeCopy.method]).includes(
         "requestBody"
@@ -937,7 +884,7 @@ describe("Test convertCustomRouteToOpenAPIJsonFormat", () => {
   });
 
   test("Responses key should be referenced at the same level as tags and have an object representing the possible responses", () => {
-    const converted = convertCustomRouteToOpenAPIJsonFormat(routeCopy);
+    const converted = convertRouteToOpenAPIJsonFormat(routeCopy);
     expect(
       Object.keys(converted[routeCopy.path][routeCopy.method]).includes(
         "responses"

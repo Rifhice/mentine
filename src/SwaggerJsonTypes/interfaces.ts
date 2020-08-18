@@ -1,3 +1,4 @@
+import { HttpVerb, ObjectType } from "../interfaces";
 import {
   VariableBoolean,
   VariableDate,
@@ -5,8 +6,7 @@ import {
   VariableNumber,
   VariablePassword,
   VariableString,
-} from "../CustomVariables/interfaces";
-import { HttpVerb, ObjectType } from "../interfaces";
+} from "../Variables/interfaces";
 
 export type SwaggerJsonBaseVariableType = {
   description: string;
