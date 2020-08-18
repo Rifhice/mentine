@@ -1,51 +1,10 @@
-#!/usr/bin/env node
+import { convertEntityToOpenApiFormat } from "./Entity/converters";
+import { convertRouteToOpenAPIJsonFormat } from "./Route/converters";
 
-const glob = require("glob");
-const fs = require("fs");
-const { program } = require("commander");
-const path = require("path");
-
-program
-  .option("-p, --path <path>", "Source path, default: .", "dist")
-  .option(
-    "-re, --readExtension <readExtension>",
-    "File extension for reasing, default: .doc.js",
-    ".doc.js"
-  )
-  .option(
-    "-we, --writeExtension <writeExtension>",
-    "Written files extension, default: .doc.js",
-    ".doc.js"
-  );
-
-program.parse(process.argv);
-
-const { path: srcPath, readExtension, writeExtension } = program;
-
-const getDirectories = function (src: string, callback) {
-  glob(src + "/**/*", callback);
+export const convertRouteToOpenApi = (doc: any) => {
+  return doc.simplified ? convertRouteToOpenAPIJsonFormat(doc) : doc;
 };
 
-getDirectories(srcPath, async function (err, res) {
-  if (err) return console.log("Error", err);
-  const files = res.filter((file) => file.includes(readExtension));
-  await Promise.all(
-    files.map(
-      (file) =>
-        new Promise((r) => {
-          // const requiredFile = require(path.join(process.cwd(), file));
-          // const yaml = convertTsDocToYaml(
-          //   convertRouteToOpenAPIJsonFormat(
-          //     Object.values(requiredFile)[0] as Route
-          //   )
-          // );
-          // const jsDoc = `/**\n* @swagger\n${yaml
-          //   .split("\n")
-          //   .map((line) => `* ${line}`)
-          //   .join("\n")}\n*/`;
-          // fs.writeFileSync(file.replace(readExtension, writeExtension), jsDoc);
-          // r();
-        })
-    )
-  );
-});
+export const convertEntityToOpenApi = (doc: any) => {
+  return doc.simplified ? convertEntityToOpenApiFormat(doc) : doc;
+};
