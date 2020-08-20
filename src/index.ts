@@ -1,5 +1,6 @@
 import { convertEntityToOpenApiFormat } from "./Entity/converters";
 import { convertRouteToOpenAPIJsonFormat } from "./Route/converters";
+export { Entity } from "./Entity/interfaces";
 export {
   DeleteRoute,
   GetRoute,
