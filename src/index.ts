@@ -10,6 +10,7 @@ export {
   Route,
 } from "./Route/interfaces";
 export { validateRoute } from "./Route/validators";
+export * from "./Variables/interfaces";
 
 export const convertRouteToOpenApi = (doc: any) => {
   return doc.simplified ? convertRouteToOpenAPIJsonFormat(doc) : doc;
