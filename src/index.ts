@@ -1,6 +1,7 @@
 import { convertEntityToOpenApiFormat } from "./Entity/converters";
 import { convertRouteToOpenAPIJsonFormat } from "./Route/converters";
 export { Entity } from "./Entity/interfaces";
+export { validateEntity } from "./Entity/validators";
 export {
   DeleteRoute,
   GetRoute,
@@ -8,6 +9,7 @@ export {
   PutRoute,
   Route,
 } from "./Route/interfaces";
+export { validateRoute } from "./Route/validators";
 
 export const convertRouteToOpenApi = (doc: any) => {
   return doc.simplified ? convertRouteToOpenAPIJsonFormat(doc) : doc;
