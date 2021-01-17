@@ -58,6 +58,7 @@ export const validateStringVariable = (stringVariable: VariableString) => {
   const {
     example,
     enum: variableEnum,
+    default: variableDefault,
     maxLength,
     minLength,
     pattern,
@@ -71,6 +72,11 @@ export const validateStringVariable = (stringVariable: VariableString) => {
     }
     if (variableEnum.some((variable) => typeof variable !== "string")) {
       throw new Error("Enum should be an array of strings");
+    }
+  }
+  if (variableDefault) {
+    if (typeof variableDefault !== "string") {
+      throw new Error("Max lenght should be a string");
     }
   }
   if (maxLength) {
@@ -94,13 +100,24 @@ export const validatePasswordVariable = (
   passwordVariable: VariablePassword
 ) => {
   validateBaseVariable(passwordVariable);
-  const { example, maxLength, minLength, pattern } = passwordVariable;
+  const {
+    example,
+    maxLength,
+    minLength,
+    pattern,
+    default: variableDefault,
+  } = passwordVariable;
   if (!example) throw new Error("Example is required");
   if (typeof example !== "string")
     throw new Error("Example should be a string");
   if (maxLength) {
     if (typeof maxLength !== "number") {
       throw new Error("Max lenght should be a number");
+    }
+  }
+  if (variableDefault) {
+    if (typeof variableDefault !== "string") {
+      throw new Error("Max lenght should be a string");
     }
   }
   if (minLength) {
@@ -117,12 +134,23 @@ export const validatePasswordVariable = (
 
 export const validateDateVariable = (dateVariable: VariableDate) => {
   validateBaseVariable(dateVariable);
-  const { example, maxLength, minLength, pattern } = dateVariable;
+  const {
+    example,
+    maxLength,
+    minLength,
+    pattern,
+    default: variableDefault,
+  } = dateVariable;
   if (!example) throw new Error("Example is required");
   if (typeof example !== "string" && !((example as any) instanceof Date))
     throw new Error("Example should be a string or a date");
   if (typeof example === "string" && isNaN(Date.parse(example)))
     throw new Error("Example should be a date");
+  if (variableDefault) {
+    if (typeof variableDefault !== "string") {
+      throw new Error("Max lenght should be a string");
+    }
+  }
   if (maxLength) {
     if (typeof maxLength !== "number") {
       throw new Error("Max lenght should be a number");
@@ -146,6 +174,7 @@ export const validateNumberVariable = (numberVariable: VariableNumber) => {
     example,
     exclusiveMaximum,
     exclusiveMinimum,
+    default: variableDefault,
     minimum,
     maximum,
     multipleOf,
@@ -160,6 +189,11 @@ export const validateNumberVariable = (numberVariable: VariableNumber) => {
   if (exclusiveMinimum) {
     if (typeof exclusiveMinimum !== "number")
       throw new Error("Exclusive minimum should be a number");
+  }
+  if (variableDefault) {
+    if (typeof variableDefault !== "number") {
+      throw new Error("Max lenght should be a number");
+    }
   }
   if (minimum) {
     if (typeof minimum !== "number")
@@ -177,10 +211,15 @@ export const validateNumberVariable = (numberVariable: VariableNumber) => {
 
 export const validateBooleanVariable = (booleanVariable: VariableBoolean) => {
   validateBaseVariable(booleanVariable);
-  const { example } = booleanVariable;
+  const { example, default: variableDefault } = booleanVariable;
   if (typeof example === "undefined") throw new Error("Example is required");
   if (typeof example !== "boolean")
     throw new Error("Example should be a boolean");
+  if (variableDefault) {
+    if (typeof variableDefault !== "boolean") {
+      throw new Error("Max lenght should be a boolean");
+    }
+  }
 };
 
 export const validateIntegerVariable = (numberVariable: VariableInteger) => {
@@ -189,6 +228,7 @@ export const validateIntegerVariable = (numberVariable: VariableInteger) => {
     example,
     exclusiveMaximum,
     exclusiveMinimum,
+    default: variableDefault,
     minimum,
     maximum,
     multipleOf,
@@ -203,6 +243,11 @@ export const validateIntegerVariable = (numberVariable: VariableInteger) => {
   if (exclusiveMinimum) {
     if (typeof exclusiveMinimum !== "number")
       throw new Error("Exclusive minimum should be a number");
+  }
+  if (variableDefault) {
+    if (typeof variableDefault !== "number") {
+      throw new Error("Max lenght should be a number");
+    }
   }
   if (minimum) {
     if (typeof minimum !== "number")
