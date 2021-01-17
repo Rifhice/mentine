@@ -9,6 +9,7 @@ export type BaseVariableType = {
 export interface VariableNumber extends BaseVariableType {
   type: "number";
   example: number;
+  default?: number;
   maximum?: number;
   minimum?: number;
   exclusiveMaximum?: number;
@@ -18,6 +19,7 @@ export interface VariableNumber extends BaseVariableType {
 export interface VariableInteger extends BaseVariableType {
   type: "integer";
   example: number;
+  default?: number;
   maximum?: number;
   minimum?: number;
   exclusiveMaximum?: number;
@@ -27,6 +29,7 @@ export interface VariableInteger extends BaseVariableType {
 export interface VariableString extends BaseVariableType {
   type: "string";
   example: string;
+  default?: string;
   minLength?: number;
   maxLength?: number;
   pattern?: string;
@@ -36,6 +39,7 @@ export interface VariableString extends BaseVariableType {
 export interface VariablePassword extends BaseVariableType {
   type: "password";
   example: string;
+  default?: string;
   minLength?: number;
   maxLength?: number;
   pattern?: string;
@@ -44,6 +48,7 @@ export interface VariablePassword extends BaseVariableType {
 export interface VariableDate extends BaseVariableType {
   type: "date";
   example: Date | string;
+  default?: string;
   minLength?: number;
   maxLength?: number;
   pattern?: string;
@@ -52,6 +57,7 @@ export interface VariableDate extends BaseVariableType {
 export interface VariableBoolean extends BaseVariableType {
   type: "boolean";
   example: boolean;
+  default?: boolean;
 }
 
 export interface VariableArray extends BaseVariableType {
